@@ -1,0 +1,5 @@
+node {
+    stage('Git checkout'){
+        git branch: 'main', url: 'https://github.com/vunguyen22271/GJAK_MrDevOps.git'
+    }
+}
