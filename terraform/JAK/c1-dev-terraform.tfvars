@@ -1,0 +1,7 @@
+project = "gjak"
+projEnv = "dev"
+mainLocation = "eastasia"
+projVersion = "01"
+terraformType = "static_ip"
+vm_user = "azureuser"
+vm_pass = "Sqltutorial12345"
