@@ -14,7 +14,7 @@ spec:
       spec:
        containers:
         - name: mrdevops
-          image: vnguyen2201/gjak-demo
+          image: vnguyen2201/gjak-demo:v1.latest
           imagePullPolicy: Always
           ports:
           - containerPort: 80
