@@ -6,6 +6,6 @@
     #  - name: delete old service
     #    command: kubectl delete -f /home/azureuser/gjak-demo/k8s/Service.yml
      - name: create new deployment
-       command: kubectl apply -f /home/azureuser/gjak-demo/k8s/Deployment.yml
+       command: kubectl apply -f /home/azureuser/gjak-demo/k8s/Deployment.yml --kubeconfig=/home/azureuser/.kube/config
      - name: create new service
-       command: kubectl apply -f /home/azureuser/gjak-demo/k8s/Service.yml
+       command: kubectl apply -f /home/azureuser/gjak-demo/k8s/Service.yml --kubeconfig=/home/azureuser/.kube/config
