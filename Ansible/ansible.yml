@@ -1,11 +1,11 @@
 - hosts: all
   become: true
   tasks: 
-    #  - name: delete old deployment
-    #    command: kubectl delete -f /home/azureuser/gjak-demo/k8s/Deployment.yml
-    #  - name: delete old service
-    #    command: kubectl delete -f /home/azureuser/gjak-demo/k8s/Service.yml
+     - name: delete old deployment
+       command: kubectl delete -f /home/azureuser/gjak-demo/k8s/Deployment.yml --kubeconfig=/home/azureuser/.kube/config
+     - name: delete old service
+       command: kubectl delete -f /home/azureuser/gjak-demo/k8s/Service.yml --kubeconfig=/home/azureuser/.kube/config
      - name: create new deployment
-       command: kubectl apply -f /home/azureuser/gjak-demo/k8s/Deployment.yml --kubeconfig=/home/azureuser/.kube/config --force
+       command: kubectl apply -f /home/azureuser/gjak-demo/k8s/Deployment.yml --kubeconfig=/home/azureuser/.kube/config
      - name: create new service
-       command: kubectl apply -f /home/azureuser/gjak-demo/k8s/Service.yml --kubeconfig=/home/azureuser/.kube/config --force
+       command: kubectl apply -f /home/azureuser/gjak-demo/k8s/Service.yml --kubeconfig=/home/azureuser/.kube/config
