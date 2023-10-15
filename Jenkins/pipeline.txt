@@ -1,5 +1,50 @@
 node {
+    // https://plugins.jenkins.io/ssh-steps/
+    def remoteAnsible = [:]
+    remoteAnsible.name = 'ansible'
+    remoteAnsible.host = '20.24.98.124'
+    remoteAnsible.user = 'azureuser'
+    remoteAnsible.password = 'Sqltutorial12345'
+    remoteAnsible.allowAnyHosts = true
+    
+    def remoteK8S = [:]
+    remoteK8S.name = 'k8s'
+    remoteK8S.host = '20.187.119.181'
+    remoteK8S.user = 'azureuser'
+    remoteK8S.password = 'Sqltutorial12345'
+    remoteK8S.allowAnyHosts = true
+    
     stage('Git checkout'){
         git branch: 'main', url: 'https://github.com/vunguyen22271/GJAK_MrDevOps.git'
+    }
+    
+    stage('Sending dockerfile to Ansible via ssh'){
+        sshPut remote: remoteAnsible, from: '/var/lib/jenkins/workspace/gjak-demo/Docker', into: '/home/azureuser'
+        sshPut remote: remoteAnsible, from: '/var/lib/jenkins/workspace/gjak-demo/.', into: '/home/azureuser/'
+    }
+    stage('Docker Build Image'){
+        sshCommand remote: remoteAnsible, command: "cd /home/azureuser/gjak-demo/Docker && docker image build -t $JOB_NAME:v1.$BUILD_ID ."
+    }
+    stage('Docker Image Tagging'){
+        sshCommand remote: remoteAnsible, command: "cd /home/azureuser/gjak-demo/Docker && docker image tag $JOB_NAME:v1.$BUILD_ID vnguyen2201/$JOB_NAME:v1.$BUILD_ID"
+        sshCommand remote: remoteAnsible, command: "cd /home/azureuser/gjak-demo/Docker && docker image tag $JOB_NAME:v1.$BUILD_ID vnguyen2201/$JOB_NAME:latest"
+    }
+    stage('Pushing Docker Image to DockerHub'){
+        withCredentials([string(credentialsId: 'dockerhub_pass', variable: 'dockerhub_pass')]) {
+            sshCommand remote: remoteAnsible, command: "docker login -u vnguyen2201 -p ${dockerhub_pass}"
+            sshCommand remote: remoteAnsible, command: "docker image push vnguyen2201/$JOB_NAME:v1.$BUILD_ID"
+            sshCommand remote: remoteAnsible, command: "docker image push vnguyen2201/$JOB_NAME:latest"
+            
+            sshCommand remote: remoteAnsible, command: "docker image rm vnguyen2201/$JOB_NAME:v1.$BUILD_ID vnguyen2201/$JOB_NAME:latest"
+        }
+    }
+    stage('Copy files from Jenkins Server to K8S server'){
+        sshPut remote: remoteK8S, from: '/var/lib/jenkins/workspace/gjak-demo/.', into: '/home/azureuser/'
+    }
+    stage('Deploy K8S using Ansible'){
+        withCredentials([string(credentialsId: 'dockerhub_pass', variable: 'dockerhub_pass')]) {
+            sshCommand remote: remoteK8S, command: "docker login -u vnguyen2201 -p ${dockerhub_pass}"
+        }
+        sshCommand remote: remoteAnsible, command: "cd /home/azureuser/gjak-demo/Ansible && ansible-playbook ansible.yml"
     }
 }
