@@ -1,6 +1,6 @@
 #! /bin/bash
 
-sudo apt-add-repository ppa:ansible/ansible -y
+sudo add-apt-repository --yes --update ppa:ansible/ansible
 
 sudo apt update -y 
 
