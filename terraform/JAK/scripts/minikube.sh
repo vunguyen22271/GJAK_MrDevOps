@@ -32,7 +32,6 @@ kubectl version -o yaml
 
 
 echo "Start the minikube"
-minikube start 
+minikube start --ports=31200:31200 --driver=docker
 minikube status
-
 
